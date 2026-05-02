@@ -1,0 +1,669 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#2C2C2A">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Badsanierung">
+<title>Badsanierung – Checkliste & Grundriss</title>
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<style>
+  :root {
+    --bg-primary: #FAFAF7;
+    --bg-secondary: #F0EFEA;
+    --bg-card: #FFFFFF;
+    --text-primary: #2C2C2A;
+    --text-secondary: #5F5E5A;
+    --text-tertiary: #8A8985;
+    --border: #E5E5E0;
+    --accent: #185FA5;
+    --accent-soft: #E8F0F8;
+    --danger: #993C1D;
+    --success: #0F6E56;
+    --radius-sm: 6px;
+    --radius-md: 10px;
+    --radius-lg: 14px;
+    --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg-primary: #1A1A18;
+      --bg-secondary: #232321;
+      --bg-card: #2A2A27;
+      --text-primary: #F0EFEA;
+      --text-secondary: #A8A7A2;
+      --text-tertiary: #6E6D68;
+      --border: #3A3A36;
+      --accent: #5FA0E0;
+      --accent-soft: #1F3A52;
+    }
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; height: 100%; }
+  body {
+    font-family: var(--font-sans);
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    font-size: 14px;
+    line-height: 1.5;
+    padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+  }
+  header {
+    background: var(--bg-card);
+    border-bottom: 1px solid var(--border);
+    padding: 14px 18px;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+  }
+  header h1 { font-size: 16px; margin: 0; font-weight: 600; }
+  header .project-info { font-size: 12px; color: var(--text-secondary); margin-top: 2px; }
+  header .header-actions { display: flex; gap: 6px; }
+  main { max-width: 900px; margin: 0 auto; padding: 16px; }
+  button {
+    font-family: inherit;
+    font-size: 13px;
+    padding: 8px 14px;
+    border: 1px solid var(--border);
+    background: var(--bg-card);
+    color: var(--text-primary);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: background 0.15s, border-color 0.15s;
+  }
+  button:hover { background: var(--bg-secondary); }
+  button.primary { background: var(--accent); color: white; border-color: var(--accent); }
+  button.primary:hover { filter: brightness(1.1); }
+  button.danger { color: var(--danger); }
+  button.icon-only { padding: 8px 10px; }
+  input, select, textarea {
+    font-family: inherit;
+    font-size: 13px;
+    padding: 8px 10px;
+    border: 1px solid var(--border);
+    background: var(--bg-card);
+    color: var(--text-primary);
+    border-radius: var(--radius-sm);
+    width: 100%;
+  }
+  input:focus, select:focus, textarea:focus {
+    outline: none;
+    border-color: var(--accent);
+  }
+  textarea { resize: vertical; min-height: 60px; }
+  .tabs {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 18px;
+    border-bottom: 1px solid var(--border);
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  .tab {
+    padding: 10px 16px;
+    background: transparent;
+    border: none;
+    border-bottom: 2px solid transparent;
+    font-size: 14px;
+    font-weight: 400;
+    cursor: pointer;
+    color: var(--text-secondary);
+    border-radius: 0;
+    white-space: nowrap;
+  }
+  .tab.active {
+    color: var(--text-primary);
+    border-bottom-color: var(--text-primary);
+    font-weight: 500;
+  }
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 10px;
+    margin-bottom: 18px;
+  }
+  .stat-card {
+    background: var(--bg-secondary);
+    border-radius: var(--radius-md);
+    padding: 12px 14px;
+  }
+  .stat-card p { margin: 0; }
+  .stat-card .label { font-size: 12px; color: var(--text-secondary); margin-bottom: 2px; }
+  .stat-card .value { font-size: 20px; font-weight: 500; }
+  .toolbar {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 14px;
+    flex-wrap: wrap;
+  }
+  .item-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    margin-bottom: 8px;
+    overflow: hidden;
+  }
+  .item-card.done { background: var(--bg-secondary); }
+  .item-head {
+    display: grid;
+    grid-template-columns: 24px 1fr auto;
+    gap: 12px;
+    align-items: center;
+    padding: 14px 16px;
+    cursor: pointer;
+  }
+  .item-title { font-size: 14px; font-weight: 500; }
+  .item-sub { font-size: 12px; color: var(--text-secondary); margin-top: 2px; }
+  .item-body {
+    display: none;
+    padding: 0 16px 16px 52px;
+    border-top: 1px solid var(--border);
+  }
+  .item-card.expanded .item-body { display: block; padding-top: 14px; }
+  .field-row { margin-bottom: 12px; }
+  .field-label {
+    font-size: 12px;
+    color: var(--text-secondary);
+    display: block;
+    margin-bottom: 4px;
+    font-weight: 500;
+  }
+  .field-pair { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .chev {
+    font-size: 14px;
+    color: var(--text-tertiary);
+    transition: transform 0.15s;
+    display: inline-block;
+  }
+  .item-card.expanded .chev { transform: rotate(90deg); }
+  @media (max-width: 600px) {
+    .field-pair { grid-template-columns: 1fr; }
+    .item-body { padding-left: 16px; }
+    main { padding: 12px; }
+    header { padding: 12px 14px; }
+    header h1 { font-size: 14px; }
+  }
+  .plan-controls {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    align-items: end;
+    margin-bottom: 14px;
+  }
+  .plan-control-group label {
+    font-size: 12px;
+    color: var(--text-secondary);
+    display: block;
+    margin-bottom: 4px;
+  }
+  .plan-control-group input { width: 110px; }
+  .plan-area {
+    display: inline-block;
+    align-self: center;
+    font-size: 12px;
+    color: var(--text-secondary);
+  }
+  .symbol-bar {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin-bottom: 14px;
+    padding: 10px;
+    background: var(--bg-secondary);
+    border-radius: var(--radius-md);
+  }
+  .symbol-bar span {
+    font-size: 12px;
+    color: var(--text-secondary);
+    align-self: center;
+    margin-right: 4px;
+  }
+  .sym-btn {
+    height: 30px;
+    font-size: 12px;
+    padding: 0 12px;
+  }
+  #sel-panel {
+    display: none;
+    margin-bottom: 14px;
+    padding: 12px 14px;
+    background: var(--accent-soft);
+    border-radius: var(--radius-md);
+    border-left: 3px solid var(--accent);
+  }
+  .sel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .sel-actions { display: flex; gap: 6px; flex-wrap: wrap; }
+  .sel-fields {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+  }
+  @media (max-width: 600px) {
+    .sel-fields { grid-template-columns: repeat(2, 1fr); }
+  }
+  .canvas-wrap {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 14px;
+    overflow: hidden;
+  }
+  #canvas {
+    width: 100%;
+    height: auto;
+    display: block;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: none;
+  }
+  .help-text {
+    font-size: 12px;
+    color: var(--text-tertiary);
+    margin: 8px 0 0;
+  }
+  .modal-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.5);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+    padding: 16px;
+  }
+  .modal-backdrop.active { display: flex; }
+  .modal {
+    background: var(--bg-card);
+    border-radius: var(--radius-lg);
+    padding: 20px;
+    max-width: 500px;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+  .modal h2 { margin-top: 0; font-size: 18px; }
+  .modal .form-row { margin-bottom: 12px; }
+  .modal-actions {
+    display: flex;
+    gap: 8px;
+    justify-content: flex-end;
+    margin-top: 16px;
+    flex-wrap: wrap;
+  }
+  .project-list { list-style: none; padding: 0; margin: 0 0 16px; }
+  .project-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    margin-bottom: 6px;
+    cursor: pointer;
+  }
+  .project-item:hover { background: var(--bg-secondary); }
+  .project-item.active {
+    border-color: var(--accent);
+    background: var(--accent-soft);
+  }
+  .project-item .name { font-weight: 500; }
+  .project-item .meta { font-size: 12px; color: var(--text-secondary); margin-top: 2px; }
+  .summary-block {
+    margin-bottom: 14px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--border);
+  }
+  .summary-block p { margin: 2px 0; }
+  .install-banner {
+    background: var(--accent-soft);
+    border: 1px solid var(--accent);
+    border-radius: var(--radius-md);
+    padding: 12px 14px;
+    margin-bottom: 14px;
+    display: none;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  .install-banner.show { display: flex; }
+  .install-banner p { margin: 0; font-size: 13px; }
+  .customer-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    margin-bottom: 14px;
+    overflow: hidden;
+  }
+  .customer-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 16px;
+    cursor: pointer;
+    gap: 12px;
+  }
+  .customer-head .title { font-size: 14px; font-weight: 500; }
+  .customer-head .compact {
+    font-size: 12px;
+    color: var(--text-secondary);
+    margin-top: 2px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .customer-card .chev { font-size: 14px; color: var(--text-tertiary); transition: transform 0.15s; }
+  .customer-card.expanded .chev { transform: rotate(90deg); }
+  .customer-body {
+    display: none;
+    padding: 0 16px 16px;
+    border-top: 1px solid var(--border);
+  }
+  .customer-card.expanded .customer-body { display: block; padding-top: 14px; }
+  .customer-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px 12px;
+  }
+  .customer-grid .span-2 { grid-column: span 2; }
+  .customer-section-title {
+    grid-column: span 2;
+    font-size: 12px;
+    color: var(--text-secondary);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-top: 10px;
+    margin-bottom: -4px;
+    padding-bottom: 4px;
+    border-bottom: 1px solid var(--border);
+  }
+  .customer-section-title:first-child { margin-top: 0; }
+  .row-with-button {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+  }
+  .row-with-button input { flex: 1; }
+  @media (max-width: 600px) {
+    .customer-grid { grid-template-columns: 1fr; }
+    .customer-grid .span-2 { grid-column: span 1; }
+    .customer-section-title { grid-column: span 1; }
+  }
+  @media print {
+    header, .tabs, .toolbar, .symbol-bar, #sel-panel, .install-banner, .header-actions, button { display: none !important; }
+    body { background: white; color: black; }
+    .item-card { break-inside: avoid; border: 1px solid #ccc; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <h1 id="app-title">Badsanierung</h1>
+    <div class="project-info" id="project-info">Kein Projekt ausgewählt</div>
+  </div>
+  <div class="header-actions">
+    <button id="btn-projects" class="icon-only" title="Projekte">📁</button>
+    <button id="btn-pdf" class="icon-only" title="PDF / Drucken">📄</button>
+  </div>
+</header>
+
+<main>
+
+<div id="install-banner" class="install-banner">
+  <p>📱 App auf dem Homescreen installieren?</p>
+  <div style="display: flex; gap: 6px;">
+    <button id="btn-install" class="primary">Installieren</button>
+    <button id="btn-install-dismiss">Später</button>
+  </div>
+</div>
+
+<div class="tabs">
+  <button id="tab-check" class="tab active">Checkliste</button>
+  <button id="tab-plan" class="tab">Grundriss</button>
+  <button id="tab-summary" class="tab">Zusammenfassung</button>
+</div>
+
+<!-- ===================== CHECKLISTE ===================== -->
+<section id="view-check">
+
+  <div id="customer-card" class="customer-card expanded">
+    <div class="customer-head" id="customer-head">
+      <div style="flex: 1; min-width: 0;">
+        <div class="title">Kundendaten</div>
+        <div class="compact" id="customer-compact">Noch keine Daten erfasst</div>
+      </div>
+      <span class="chev">›</span>
+    </div>
+    <div class="customer-body">
+      <div class="customer-grid">
+
+        <div class="customer-section-title">Kunde</div>
+        <div>
+          <label class="field-label">Vorname</label>
+          <input type="text" class="cust-fld" data-key="firstName" placeholder="z.B. Max">
+        </div>
+        <div>
+          <label class="field-label">Nachname</label>
+          <input type="text" class="cust-fld" data-key="lastName" placeholder="z.B. Müller">
+        </div>
+        <div class="span-2">
+          <label class="field-label">Straße & Hausnummer</label>
+          <input type="text" class="cust-fld" data-key="street" placeholder="z.B. Musterstraße 12">
+        </div>
+        <div>
+          <label class="field-label">PLZ</label>
+          <input type="text" class="cust-fld" data-key="zip" placeholder="z.B. 22043" inputmode="numeric">
+        </div>
+        <div>
+          <label class="field-label">Ort</label>
+          <input type="text" class="cust-fld" data-key="city" placeholder="z.B. Hamburg">
+        </div>
+
+        <div class="customer-section-title">Bauvorhaben</div>
+        <div class="span-2">
+          <label class="field-label">
+            Baustellen-Adresse
+            <span style="color: var(--text-tertiary); font-weight: 400;">(falls abweichend)</span>
+          </label>
+          <div class="row-with-button">
+            <input type="text" id="cust-siteAddress" class="cust-fld" data-key="siteAddress" placeholder="leer lassen, wenn identisch mit Kundenadresse">
+            <button id="btn-copy-address" type="button" title="Kundenadresse übernehmen">↓ übernehmen</button>
+          </div>
+        </div>
+        <div class="span-2">
+          <label class="field-label">Auftragsnummer / Kundennummer</label>
+          <input type="text" class="cust-fld" data-key="orderNo" placeholder="z.B. 2025-047">
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <div class="stats">
+    <div class="stat-card">
+      <p class="label">Positionen erledigt</p>
+      <p class="value" id="stat-positions">0 / 11</p>
+    </div>
+    <div class="stat-card">
+      <p class="label">Stunden gesamt</p>
+      <p class="value" id="stat-hours">0 h</p>
+    </div>
+    <div class="stat-card">
+      <p class="label">Sonstige Kosten</p>
+      <p class="value" id="stat-extra">0 €</p>
+    </div>
+  </div>
+
+  <div class="toolbar">
+    <button id="btn-expand-all">Alle aufklappen</button>
+    <button id="btn-collapse-all">Alle einklappen</button>
+    <button id="btn-reset" class="danger">Zurücksetzen</button>
+  </div>
+
+  <div id="checklist"></div>
+</section>
+
+<!-- ===================== GRUNDRISS ===================== -->
+<section id="view-plan" style="display: none;">
+  <div class="plan-controls">
+    <div class="plan-control-group">
+      <label>Länge (cm)</label>
+      <input type="number" id="room-l" value="400" min="100" max="1200" step="10">
+    </div>
+    <div class="plan-control-group">
+      <label>Breite (cm)</label>
+      <input type="number" id="room-w" value="250" min="100" max="1200" step="10">
+    </div>
+    <button id="btn-apply" class="primary">Übernehmen</button>
+    <button id="btn-clear">Symbole entfernen</button>
+    <span class="plan-area">Fläche: <strong id="area-out">10,0 m²</strong></span>
+  </div>
+
+  <div class="symbol-bar">
+    <span>Symbol hinzufügen:</span>
+    <button class="sym-btn" data-sym="wc">WC</button>
+    <button class="sym-btn" data-sym="basin">Waschbecken</button>
+    <button class="sym-btn" data-sym="bath">Badewanne</button>
+    <button class="sym-btn" data-sym="shower">Dusche</button>
+    <button class="sym-btn" data-sym="bidet">Bidet</button>
+    <button class="sym-btn" data-sym="cabinet">Schrank</button>
+    <button class="sym-btn" data-sym="washer">Waschmaschine</button>
+    <button class="sym-btn" data-sym="door">Tür</button>
+  </div>
+
+  <div id="sel-panel">
+    <div class="sel-header">
+      <strong id="sel-title">Symbol</strong>
+      <div class="sel-actions">
+        <button id="sel-rotate">↻ Drehen</button>
+        <button id="sel-delete" class="danger">Löschen</button>
+        <button id="sel-close">×</button>
+      </div>
+    </div>
+    <div class="sel-fields">
+      <div>
+        <label class="field-label">Breite (cm)</label>
+        <input type="number" id="sel-w" min="10" max="500" step="1">
+      </div>
+      <div>
+        <label class="field-label">Tiefe (cm)</label>
+        <input type="number" id="sel-h" min="10" max="500" step="1">
+      </div>
+      <div>
+        <label class="field-label">Pos. X (cm)</label>
+        <input type="number" id="sel-x" min="0" step="1">
+      </div>
+      <div>
+        <label class="field-label">Pos. Y (cm)</label>
+        <input type="number" id="sel-y" min="0" step="1">
+      </div>
+    </div>
+  </div>
+
+  <div class="canvas-wrap">
+    <svg id="canvas" viewBox="0 0 640 420" xmlns="http://www.w3.org/2000/svg"></svg>
+  </div>
+  <p class="help-text">Tipp: Symbol antippen → ziehen zum Verschieben · Maße im Panel anpassen · Doppelklick rotiert · Pfeiltasten für 1-cm-Schritte (Shift = 10 cm)</p>
+</section>
+
+<!-- ===================== ZUSAMMENFASSUNG ===================== -->
+<section id="view-summary" style="display: none;">
+  <div id="summary-content"></div>
+  <div class="toolbar" style="margin-top: 16px;">
+    <button id="btn-pdf-2" class="primary">PDF / Drucken</button>
+    <button id="btn-copy">In Zwischenablage kopieren</button>
+    <button id="btn-export-json">Als JSON exportieren</button>
+  </div>
+</section>
+
+</main>
+
+<!-- ===================== MODALS ===================== -->
+<div id="modal-projects" class="modal-backdrop">
+  <div class="modal">
+    <h2>Projekte</h2>
+    <ul id="project-list" class="project-list"></ul>
+    <button id="btn-new-project" class="primary">Neues Projekt anlegen</button>
+    <button id="btn-import-json">JSON importieren</button>
+    <input type="file" id="import-file" accept=".json" style="display:none">
+    <div class="modal-actions">
+      <button id="btn-close-projects">Schließen</button>
+    </div>
+  </div>
+</div>
+
+<div id="modal-edit-project" class="modal-backdrop">
+  <div class="modal">
+    <h2 id="edit-modal-title">Neues Projekt</h2>
+    <div class="form-row">
+      <label class="field-label">Projektname *</label>
+      <input type="text" id="edit-name" placeholder="z.B. Bad Müller, Hamburg">
+    </div>
+    <div class="form-row">
+      <label class="field-label">Adresse</label>
+      <input type="text" id="edit-address" placeholder="z.B. Musterstraße 12, 22043 Hamburg">
+    </div>
+    <div class="form-row">
+      <label class="field-label">Datum</label>
+      <input type="date" id="edit-date">
+    </div>
+    <div class="form-row">
+      <label class="field-label">Notiz</label>
+      <textarea id="edit-note" placeholder="Allgemeine Hinweise zum Projekt"></textarea>
+    </div>
+    <div class="modal-actions">
+      <button id="btn-edit-cancel">Abbrechen</button>
+      <button id="btn-edit-save" class="primary">Speichern</button>
+    </div>
+  </div>
+</div>
+
+<script src="app.js"></script>
+<script>
+  // Service Worker registrieren (für Offline-Fähigkeit)
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('sw.js').catch(err => console.log('SW registration failed:', err));
+    });
+  }
+
+  // PWA-Install-Prompt abfangen
+  let deferredPrompt = null;
+  window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferredPrompt = e;
+    const banner = document.getElementById('install-banner');
+    if (!localStorage.getItem('install-dismissed')) banner.classList.add('show');
+  });
+  document.getElementById('btn-install').addEventListener('click', async () => {
+    if (!deferredPrompt) return;
+    deferredPrompt.prompt();
+    await deferredPrompt.userChoice;
+    deferredPrompt = null;
+    document.getElementById('install-banner').classList.remove('show');
+  });
+  document.getElementById('btn-install-dismiss').addEventListener('click', () => {
+    document.getElementById('install-banner').classList.remove('show');
+    localStorage.setItem('install-dismissed', '1');
+  });
+</script>
+</body>
+</html>
